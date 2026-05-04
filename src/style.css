@@ -1,0 +1,106 @@
+:root {
+  --bg: #000;
+  --fg: #33ff66;
+  --fg-dim: #1aa53a;
+  --font-stack: 'VT323', 'Courier Prime', 'Lucida Console', 'Consolas', monospace;
+  --font-size: clamp(14px, 3.5vw, 20px);
+  --line-height: 1.25;
+  --srs-line-height: 1.4;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-stack);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: text;
+}
+
+#terminal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+#output {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--fg);
+  scrollbar-width: thin;
+  scrollbar-color: var(--fg-dim) transparent;
+}
+
+#output::-webkit-scrollbar { width: 6px; }
+#output::-webkit-scrollbar-thumb { background: var(--fg-dim); }
+
+#output.awaiting-input::after {
+  content: '\2588';
+  display: inline-block;
+  color: var(--fg);
+  animation: blink 1.05s steps(1) infinite;
+}
+
+.srs-frame {
+  margin: 0.5em 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--fg);
+  white-space: pre;
+  line-height: var(--srs-line-height);
+}
+
+@keyframes blink {
+  0%, 50%   { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+/* Hidden input — captures keystrokes (incl. mobile keyboards / IME),
+   live characters echo into #output via teletype sync. */
+#prompt {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+#cursor { display: none; }
+
+#cmd {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1em;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: transparent;
+  caret-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  text-transform: uppercase;
+  pointer-events: auto;
+  opacity: 0;
+}

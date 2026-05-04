@@ -1,0 +1,27 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Editor / IDE
+.vs/
+.vscode/
+.idea/
+
+# Build artefacts
+bin/
+obj/
+dist/
+build/
+
+# Node (if you ever add tooling)
+node_modules/
+npm-debug.log*
+
+# Local environment
+.env
+.env.local

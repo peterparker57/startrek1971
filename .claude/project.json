@@ -1,0 +1,16 @@
+{
+  "id": "c42bbdbd-9af4-4f10-a88f-636bf6abaad8",
+  "name": "StarTrek",
+  "description": null,
+  "changeLog": null,
+  "currentVersion": "0.1.0",
+  "createdAt": "2026-05-04T11:25:17.2168055-07:00",
+  "lastOpenedAt": "2026-05-04T11:25:17.2168085-07:00",
+  "isPinned": false,
+  "defaultTerminal": "claude-code",
+  "prompts": [
+  ],
+  "team": {
+    "agents": []
+  }
+}
