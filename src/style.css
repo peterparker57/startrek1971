@@ -140,3 +140,12 @@ html, body {
   color: #000;
   outline: 0;
 }
+
+/* The control glyphs (⌫ ⌦ ⌨) have lighter ink than letters in most
+   monospaced fonts, so size them up and use a glyph-rich fallback. */
+.kp-back,
+.kp-kbd {
+  font-size: 1.6em;
+  font-family: 'Apple Symbols', 'Segoe UI Symbol', 'Noto Sans Symbols', system-ui, sans-serif;
+  line-height: 0.9;
+}
