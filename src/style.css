@@ -72,11 +72,16 @@ html, body {
   50.01%, 100% { opacity: 0; }
 }
 
-/* Hidden input — captures keystrokes (incl. mobile keyboards / IME),
-   live characters echo into #output via teletype sync. */
+/* Hidden input — captures keystrokes (incl. hardware keyboards / IME on toggle),
+   live characters echo into #output via teletype sync. With the on-screen keypad
+   handling phone input, the input is collapsed to 1x1 so it never intercepts taps. */
 #prompt {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
   pointer-events: none;
   margin: 0;
   padding: 0;
@@ -86,11 +91,8 @@ html, body {
 #cursor { display: none; }
 
 #cmd {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 1em;
+  width: 1px;
+  height: 1px;
   margin: 0;
   padding: 0;
   background: transparent;
@@ -101,6 +103,40 @@ html, body {
   font-family: inherit;
   font-size: inherit;
   text-transform: uppercase;
-  pointer-events: auto;
   opacity: 0;
+}
+
+/* On-screen keypad — docked at the bottom of #terminal */
+#keypad {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 6px 2px 2px;
+  margin-top: 4px;
+  border-top: 1px solid var(--fg-dim);
+}
+
+.kp-key {
+  background: #001a00;
+  color: var(--fg);
+  border: 1px solid var(--fg-dim);
+  padding: 12px 0;
+  font-family: var(--font-stack);
+  font-size: var(--font-size);
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+  line-height: 1;
+}
+
+.kp-key:active,
+.kp-key:focus {
+  background: var(--fg-dim);
+  color: #000;
+  outline: 0;
 }

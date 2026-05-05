@@ -1,15 +1,20 @@
 import { Teletype } from './teletype.js';
 import { Game } from './game.js';
 import { Sound } from './sound.js';
+import { Keypad } from './keypad.js';
 import { loadPref } from './prefs.js';
 
 const sound = new Sound();
+const cmdEl = document.getElementById('cmd');
+const formEl = document.getElementById('prompt');
 const tt = new Teletype(
   document.getElementById('output'),
-  document.getElementById('cmd'),
-  document.getElementById('prompt'),
+  cmdEl,
+  formEl,
   sound,
 );
+
+new Keypad(document.getElementById('keypad'), cmdEl, formEl);
 
 // Restore saved settings (URL ?cps= still overrides delay)
 const savedDelay = loadPref('charDelayMs', null);
