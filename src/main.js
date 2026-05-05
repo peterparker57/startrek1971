@@ -55,7 +55,9 @@ async function bootstrap() {
   await clearScreen();
   await tt.println('                          STAR TREK ');
   await tt.println();
-  await tt.println("(TYPE 'I' AT THE COMMAND PROMPT FOR INSTRUCTIONS, OR '?' FOR HELP.)");
+  await tt.println("(TYPE 'I' AT COMMAND FOR INSTRUCTIONS,");
+  await tt.println(" OR '?' FOR HELP AT ANY PROMPT.)");
+  await tt.println();
   await tt.println('PRESS ANY KEY TO START YOUR MISSION.');
   await waitForAnyKey();
   sound.resume();

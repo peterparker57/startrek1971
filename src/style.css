@@ -37,9 +37,8 @@ html, body {
   flex: 1 1 auto;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  overflow: auto;
+  white-space: pre;
   font-family: inherit;
   font-size: inherit;
   color: var(--fg);

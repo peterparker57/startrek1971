@@ -1,6 +1,6 @@
 // Cache-first service worker for offline play.
 // Bump CACHE_NAME whenever asset list or critical files change to force refresh.
-const CACHE_NAME = 'sttr1-v3';
+const CACHE_NAME = 'sttr1-v4';
 const ASSETS = [
   './',
   './index.html',

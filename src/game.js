@@ -185,7 +185,8 @@ export class Game {
     const s = this.s = newGame();
     s.T = s.T0;
     await this.println();
-    await this.println(`YOU MUST DESTROY ${s.K9}  KLINGONS IN ${s.T9}  STARDATES WITH ${s.B9}  STARBASES`);
+    await this.println(`YOU MUST DESTROY ${s.K9} KLINGONS IN`);
+    await this.println(`${s.T9} STARDATES WITH ${s.B9} STARBASES`);
     await this.enterQuadrant();
     while (!s.over) {
       await this.commandLoop();
@@ -355,7 +356,7 @@ export class Game {
     await this.println('   6 = DAMAGE CONTROL REPORT');
     await this.println('   7 = CALL ON LIBRARY COMPUTER');
     await this.println('   D = SET CHARACTER DELAY (TELETYPE SPEED)');
-    await this.println('   S = SET SOUND (TELETYPE / MOVIE TEXT / OFF)');
+    await this.println('   S = SET SOUND (CLACK/TEXT/OFF)');
     await this.println('   I = SHOW GAME INSTRUCTIONS');
     await this.println();
   }
@@ -368,8 +369,11 @@ export class Game {
     const sound = this.tt.sound;
     const labels = ['OFF', 'TELETYPE', 'MOVIE TEXT', 'TELETYPE LINE (FSK)'];
     const current = sound ? labels[sound.mode] || 'OFF' : 'OFF';
+    await this.println(`SOUND (CURRENT=${current}, ENTER=KEEP):`);
+    await this.println('  0=NONE  1=TELETYPE');
+    await this.println('  2=MOVIE TEXT  3=TELETYPE LINE FSK');
     const raw = await this.askWith(
-      `SOUND (0=NONE, 1=TELETYPE, 2=MOVIE TEXT, 3=TELETYPE LINE FSK, CURRENT=${current}, ENTER=KEEP)? `,
+      'SOUND? ',
       () => this.helpSound(),
     );
     if (raw === '') return;
@@ -388,8 +392,10 @@ export class Game {
 
   async cmdSetDelay() {
     const current = this.tt.charDelayMs;
+    await this.println(`CHARACTER DELAY (MS), CURRENT=${current}`);
+    await this.println('(ENTER=KEEP, 0=INSTANT)');
     const raw = await this.askWith(
-      `CHARACTER DELAY (MS, CURRENT=${current}, ENTER=KEEP, 0=INSTANT)? `,
+      'DELAY? ',
       () => this.helpDelay(),
     );
     if (raw === '') return;
@@ -415,7 +421,7 @@ export class Game {
       w1 = await this.askNumberWith('WARP FACTOR (0-8)? ', () => this.helpWarpFactor());
       if (w1 < 0 || w1 > 8) continue;
       if (s.D[1] < 0 && w1 > 0.2) {
-        await this.println('WARP ENGINES ARE DAMAGED, MAXIMUM SPEED = WARP .2');
+        await this.println('WARP ENGINES DAMAGED, MAX SPEED .2');
         continue;
       }
       break;
@@ -429,7 +435,8 @@ export class Game {
     if (s.K3 <= 0 && s.E <= 0) {
       if (s.S < 1) return this.gameOverDeadInSpace();
       await this.println(`YOU HAVE ${s.E} UNITS OF ENERGY`);
-      await this.println(`SUGGEST YOU GET SOME FROM YOUR SHIELDS WHICH HAVE ${s.S} UNITS LEFT`);
+      await this.println('SUGGEST YOU PULL ENERGY FROM');
+      await this.println(`SHIELDS (${s.S} UNITS LEFT)`);
       return;
     }
 
@@ -442,12 +449,14 @@ export class Game {
       if (rnd() < 0.5) {
         s.D[r1] -= rnd() * 5 + 1;
         await this.println();
-        await this.println(`DAMAGE CONTROL REPORT:${DEVICE_NAMES[r1]} DAMAGED`);
+        await this.println('DAMAGE CONTROL REPORT:');
+        await this.println(`${DEVICE_NAMES[r1]} DAMAGED`);
         await this.println();
       } else {
         s.D[r1] += rnd() * 5 + 1;
         await this.println();
-        await this.println(`DAMAGE CONTROL REPORT:${DEVICE_NAMES[r1]} STATE OF REPAIR IMPROVED`);
+        await this.println('DAMAGE CONTROL REPORT:');
+        await this.println(`${DEVICE_NAMES[r1]} STATE OF REPAIR IMPROVED`);
         await this.println();
       }
     }
@@ -473,7 +482,8 @@ export class Game {
       // collision check
       const r = intHalf(s.S1), c = intHalf(s.S2);
       if (s.quadrant[r][c] !== G_EMPTY) {
-        await this.println(` WARP ENGINES SHUTDOWN AT SECTOR ${r},${c} DUE TO BAD NAVIGATION`);
+        await this.println(` WARP ENGINES SHUTDOWN AT ${r},${c}`);
+        await this.println(' DUE TO BAD NAVIGATION');
         s.S1 -= X1;
         s.S2 -= X2;
         stoppedInside = true;
@@ -539,7 +549,8 @@ export class Game {
   async cmdPhasers() {
     const s = this.s;
     if (s.K3 <= 0) {
-      await this.println('SHORT RANGE SENSORS REPORT NO KLINGONS IN THIS QUADRANT');
+      await this.println('SHORT RANGE SENSORS REPORT NO');
+      await this.println('KLINGONS IN THIS QUADRANT');
       return;
     }
     if (s.D[4] < 0) {
@@ -549,7 +560,8 @@ export class Game {
     if (s.D[7] < 0) await this.println(' COMPUTER FAILURE HAMPERS ACCURACY');
     let x;
     while (true) {
-      await this.println(`PHASERS LOCKED ON TARGET.  ENERGY AVAILABLE=${s.E}`);
+      await this.println('PHASERS LOCKED ON TARGET.');
+      await this.println(`ENERGY AVAILABLE=${s.E}`);
       x = await this.askNumberWith('NUMBER OF UNITS TO FIRE? ', () => this.helpPhasers());
       if (x <= 0) return;
       if (s.E - x >= 0) break;
@@ -566,7 +578,10 @@ export class Game {
       const h = (accuracy / s.K3 / dist) * (2 * rnd());
       k[2] -= h;
       await this.println(
-        `${fmtNumD(h, 4)} UNIT HIT ON KLINGON AT SECTOR ${k[0]},${k[1]}   (${fmtNumD(Math.max(k[2], 0), 3)} LEFT)`
+        `${fmtNumD(h, 4)} UNIT HIT ON KLINGON`
+      );
+      await this.println(
+        `AT SECTOR ${k[0]},${k[1]}  (${fmtNumD(Math.max(k[2], 0), 3)} LEFT)`
       );
       if (k[2] <= 0) {
         await this.killKlingon(i);
@@ -630,7 +645,8 @@ export class Game {
         break;
       }
       if (cell === G_STARBASE) {
-        await this.println('*** STAR BASE DESTROYED ***  .......CONGRATULATIONS');
+        await this.println('*** STAR BASE DESTROYED ***');
+        await this.println('  .......CONGRATULATIONS');
         s.B3 -= 1;
         s.B9 -= 1;
         s.quadrant[xi][yi] = G_EMPTY;
@@ -653,8 +669,9 @@ export class Game {
       return;
     }
     while (true) {
+      await this.println(`ENERGY AVAILABLE = ${s.E + s.S}`);
       const x = await this.askNumberWith(
-        `ENERGY AVAILABLE = ${s.E + s.S}   NUMBER OF UNITS TO SHIELDS? `,
+        'NUMBER OF UNITS TO SHIELDS? ',
         () => this.helpShields(),
       );
       if (x <= 0) return;
@@ -714,13 +731,15 @@ export class Game {
   // ---- Per-prompt help text ----------------------------------------------
 
   async helpCourse() {
-    await this.println('COURSE IS A COMPASS DIRECTION 1-9 (DECIMALS OK):');
+    await this.println('COURSE IS A COMPASS DIRECTION 1-9');
+    await this.println('(DECIMALS OK):');
     await this.println('       4   3   2');
     await this.println('        \\ ^ /');
     await this.println('       5 ----- 1');
     await this.println('        / v \\');
     await this.println('       6   7   8');
-    await this.println('1=RIGHT, 3=UP, 5=LEFT, 7=DOWN. 1.5 = HALFWAY 1 TO 2.');
+    await this.println('1=RIGHT, 3=UP, 5=LEFT, 7=DOWN.');
+    await this.println('1.5 = HALFWAY BETWEEN 1 AND 2.');
     await this.println('ENTER 0 TO CANCEL.');
   }
 
@@ -734,26 +753,31 @@ export class Game {
 
   async helpPhasers() {
     const s = this.s;
-    await this.println('SPEND SHIP ENERGY TO HIT KLINGONS IN THIS QUADRANT.');
-    await this.println(`AVAILABLE ENERGY = ${s.E}.  KLINGONS PRESENT = ${s.K3}.`);
-    await this.println('DAMAGE IS SPLIT AMONG KLINGONS, SCALED BY RANGE.');
-    await this.println('DAMAGED COMPUTER REDUCES ACCURACY (RANDOMIZED).');
+    await this.println('SPEND SHIP ENERGY TO HIT KLINGONS');
+    await this.println('IN THIS QUADRANT.');
+    await this.println(`AVAILABLE ENERGY = ${s.E}.`);
+    await this.println(`KLINGONS PRESENT = ${s.K3}.`);
+    await this.println('DAMAGE IS SPLIT AMONG KLINGONS,');
+    await this.println('SCALED BY RANGE.');
+    await this.println('DAMAGED COMPUTER REDUCES ACCURACY.');
     await this.println('ENTER 0 TO CANCEL.');
   }
 
   async helpShields() {
     const s = this.s;
-    await this.println('SHIELDS ABSORB DAMAGE FROM KLINGON FIRE.');
-    await this.println(`SHIP ENERGY = ${s.E}.  CURRENT SHIELDS = ${s.S}.`);
+    await this.println('SHIELDS ABSORB DAMAGE FROM KLINGONS.');
+    await this.println(`SHIP ENERGY = ${s.E}.`);
+    await this.println(`CURRENT SHIELDS = ${s.S}.`);
     await this.println(`TOTAL POOL = ${s.E + s.S}.`);
-    await this.println('ENTER UNITS TO MOVE INTO SHIELDS, 0 TO CANCEL.');
+    await this.println('ENTER UNITS TO MOVE INTO SHIELDS,');
+    await this.println('0 TO CANCEL.');
   }
 
   async helpDelay() {
     await this.println('CHARACTER PRINT DELAY IN MILLISECONDS:');
     await this.println('     0 = INSTANT');
     await this.println('     8 = FAST (DEFAULT)');
-    await this.println('    80 = ASR-33 TELETYPE SPEED (10 CHARS/SEC)');
+    await this.println('    80 = ASR-33 SPEED (10 CHARS/SEC)');
     await this.println('   150 = ED1000 BAUDOT-LIKE PACE');
     await this.println('PRESS ENTER ALONE TO KEEP CURRENT VALUE.');
   }
@@ -769,18 +793,23 @@ export class Game {
 
   async computerGalacticRecord() {
     const s = this.s;
-    await this.println(`COMPUTER RECORD OF GALAXY FOR QUADRANT ${s.Q1},${s.Q2}`);
-    await this.println('     1     2     3     4     5     6     7     8');
+    await this.println(`COMPUTER RECORD OF GALAXY ${s.Q1},${s.Q2}`);
+    const lines = [];
+    lines.push('     1     2     3     4     5     6     7     8');
     const sep = '   ----- ----- ----- ----- ----- ----- ----- -----';
-    await this.println(sep);
+    lines.push(sep);
     for (let i = 1; i <= 8; i++) {
       let line = `${i}`;
       for (let j = 1; j <= 8; j++) {
         line += '   ' + fmtNumD(s.Z[i][j], 3);
       }
-      await this.println(line);
-      await this.println(sep);
+      lines.push(line);
+      lines.push(sep);
     }
+    const block = document.createElement('pre');
+    block.className = 'srs-frame';
+    this.tt.appendBlock(block);
+    await this.tt.typeInto(block, lines.join('\n'));
   }
 
   async computerStatus() {
@@ -798,7 +827,8 @@ export class Game {
     const s = this.s;
     await this.println();
     if (s.K3 <= 0) {
-      await this.println('SHORT RANGE SENSORS REPORT NO KLINGONS IN THIS QUADRANT');
+      await this.println('SHORT RANGE SENSORS REPORT NO');
+      await this.println('KLINGONS IN THIS QUADRANT');
       return;
     }
     for (let i = 1; i <= 3; i++) {
@@ -827,7 +857,10 @@ export class Game {
       const h = (k[2] / dist) * (2 * rnd());
       s.S -= h;
       await this.println(
-        `${fmtNumD(h, 4)} UNIT HIT ON ENTERPRISE AT SECTOR ${k[0]},${k[1]}   (${fmtNumD(Math.max(s.S, 0), 4)} LEFT)`
+        `${fmtNumD(h, 4)} UNIT HIT ON ENTERPRISE`
+      );
+      await this.println(
+        `AT SECTOR ${k[0]},${k[1]}  (${fmtNumD(Math.max(s.S, 0), 4)} LEFT)`
       );
       if (s.S < 0) return this.gameOverDestroyed();
     }
@@ -848,7 +881,8 @@ export class Game {
   async gameOverWin() {
     const s = this.s;
     await this.println();
-    await this.println('THE LAST KLINGON BATTLE CRUISER IN THE GALAXY HAS BEEN DESTROYED');
+    await this.println('THE LAST KLINGON BATTLE CRUISER');
+    await this.println('IN THE GALAXY HAS BEEN DESTROYED');
     await this.println('THE FEDERATION HAS BEEN SAVED !!!');
     await this.println();
     const eff = (s.K7 / Math.max(s.T - s.T0, 1)) * 1000;
@@ -867,15 +901,17 @@ export class Game {
   async gameOverDestroyed() {
     const s = this.s;
     await this.println();
-    await this.println('THE ENTERPRISE HAS BEEN DESTROYED.  THE FEDERATION WILL BE CONQUERED');
+    await this.println('THE ENTERPRISE HAS BEEN DESTROYED.');
+    await this.println('THE FEDERATION WILL BE CONQUERED');
     await this.println(`THERE ARE STILL ${s.K9} KLINGON BATTLE CRUISERS`);
     s.over = true;
   }
 
   async gameOverDeadInSpace() {
     const s = this.s;
-    await this.println('THE ENTERPRISE IS DEAD IN SPACE.  IF YOU SURVIVE ALL IMPENDING');
-    await this.println('ATTACK YOU WILL BE DEMOTED TO THE RANK OF PRIVATE');
+    await this.println('THE ENTERPRISE IS DEAD IN SPACE.');
+    await this.println('IF YOU SURVIVE ALL IMPENDING ATTACK');
+    await this.println('YOU WILL BE DEMOTED TO PRIVATE');
     while (s.K3 > 0 && !s.over) {
       await this.klingonAttack();
     }
